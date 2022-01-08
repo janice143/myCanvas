@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    body{
+        margin:0;
+        padding: 0;
+    }
+    .main{
+        width: 900px;
+        text-align: center;
+        margin:0 auto;
+            
+    }
+    .canvas{
+        border: 1px solid black;
+        margin:20px auto;
+        width:90vh;
+        height:70vh;
+    }
+    
+    .controlers{
+            margin-top: 50px;
+            font-size: 20px;
+            font-weight: bold;
+            display:flex;
+            align-items: center;
+            justify-content: center;
+        }
+        label{
+            margin-right: 10px;
+        }
+        input{
+            margin-right: 20px;
+        }
+</style>
+<body>
+    <div class="main">
+        <div class="controlers">
+            <label for="color">颜色:</label>
+            <input id="color" type="color" name="color" value="#000000">
+    
+            <label for="lineSize">粗细:</label>
+            <input id="lineSize" type="range" name="lineSize" value="10" min="1" max="100">
+    
+            <label for="eraser">橡皮擦:</label>
+            <input id="eraser" type="checkbox" name="eraser">
+    
+        </div>
+        <div class="canvas"> 
+            <canvas id="myCanvas"></canvas>
+        </div>
+    </div>
+    
+    
+</body>
+<script>
+    const c = document.getElementById("myCanvas");
+    const ctx = c.getContext("2d");
+    const inputs = document.querySelectorAll('.controlers input');
+
+    let strokeColor = "black"
+    let lineSize = 10;
+    let eraserChecked = false;
+
+    let isDrawing = false;
+    let lastX = 0;
+    let lastY = 0;
+
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
+
+      
+    function updateValue(){
+        if (this.name == 'color')
+            strokeColor = this.value;
+        else if (this.name == 'lineSize')
+            lineSize = this.value;
+        else{
+            eraserChecked = this.checked;
+           if (eraserChecked == true)
+                strokeColor = 'white';
+            else
+                strokeColor = inputs[0].value;
+           
+        }
+        
+        // console.log(strokeColor,lineSize,eraserChecked) 
+
+    }
+   
+    // console.log(updateValue())
+
+    function draw(e) {
+        if (!isDrawing) return; // stop the fn from running when they are not moused down
+        // console.log(e);
+        console.log(strokeColor,lineSize,eraserChecked) 
+        ctx.lineWidth = lineSize;
+        ctx.strokeStyle=strokeColor;
+        ctx.beginPath();
+        // start from
+        ctx.moveTo(lastX, lastY);
+        // go to
+        ctx.lineTo(e.offsetX, e.offsetY);
+        ctx.stroke();
+        [lastX, lastY] = [e.offsetX, e.offsetY];
+
+    }
+
+ 
+    inputs.forEach(input=>input.addEventListener('change',updateValue));
+
+    c.addEventListener('mousedown', (e) => {
+        isDrawing = true;
+        [lastX, lastY] = [e.offsetX, e.offsetY];
+        });
+
+    c.addEventListener('mousemove', draw);
+    c.addEventListener('mouseup', () => isDrawing = false);
+    c.addEventListener('mouseout', () => isDrawing = false);
+    
+ 
+    </script>
+
+</html>
