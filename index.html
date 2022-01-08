@@ -11,20 +11,26 @@
         margin:0;
         padding: 0;
     }
-    .main{
-        width: 900px;
-        text-align: center;
-        margin:0 auto;
-            
-    }
+    html, body {
+    margin:0;
+		overflow: hidden;
+  }
+
+	canvas{
+		overflow: hidden;
+	}
+
     #myCanvas{
         border: 1px solid black;
         margin:30px auto;
+        display:flex;
+        align-items: center;
+        justify-content: center;
     }
     
     .controlers{
             margin-top: 30px;
-            font-size: 20px;
+            font-size: 15px;
             font-weight: bold;
             display:flex;
             align-items: center;
@@ -34,7 +40,7 @@
             margin-right: 10px;
         }
         input{
-            margin-right: 20px;
+            margin-right: 10px;
         }
 </style>
 <body>
@@ -50,7 +56,7 @@
             <input id="eraser" type="checkbox" name="eraser">
     
         </div>
-        <canvas id="myCanvas" width="500" height="500"></canvas>
+        <canvas id="myCanvas" width="500" height="500" style="overflow:auto;"></canvas>
     </div>
     
     
@@ -59,6 +65,9 @@
     const c = document.getElementById("myCanvas");
     const ctx = c.getContext("2d");
     const inputs = document.querySelectorAll('.controlers input');
+
+    c.width = window.innerWidth*0.8;
+	c.height = window.innerHeight*0.8;
 
     let strokeColor = "black"
     let lineSize = 10;
@@ -71,7 +80,10 @@
     ctx.lineJoin = 'round';
     ctx.lineCap = 'round';
 
-      
+
+
+    // console.log(c.width,c.height)
+
     function updateValue(){
         if (this.name == 'color')
             strokeColor = this.value;
@@ -85,13 +97,9 @@
                 strokeColor = inputs[0].value;
            
         }
-        
         // console.log(strokeColor,lineSize,eraserChecked) 
-
     }
    
-
-
     function draw(e) {
         // console.log(e.type);
         if (!isDrawing) return; // stop the fn from running when they are not moused down
