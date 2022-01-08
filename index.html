@@ -22,7 +22,7 @@
 
     #myCanvas{
         border: 1px solid black;
-        margin:30px auto;
+        margin:30px auto 20px;
         display:flex;
         align-items: center;
         justify-content: center;
@@ -42,6 +42,13 @@
         input{
             margin-right: 10px;
         }
+        #clear{
+            margin:0px auto;
+            display:flex;
+            align-items: center; 
+            justify-content: center;
+    
+        }
 </style>
 <body>
     <div class="main">
@@ -50,13 +57,16 @@
             <input id="color" type="color" name="color" value="#000000">
     
             <label for="lineSize">粗细:</label>
-            <input id="lineSize" type="range" name="lineSize" value="10" min="1" max="100">
+            <input id="lineSize" type="range" name="lineSize" value="1" min="1" max="100">
     
             <label for="eraser">橡皮擦:</label>
             <input id="eraser" type="checkbox" name="eraser">
     
         </div>
         <canvas id="myCanvas" width="500" height="500" style="overflow:auto;"></canvas>
+        
+        <input id="clear" type="button" name="clear" value="清屏">
+
     </div>
     
     
@@ -65,12 +75,13 @@
     const c = document.getElementById("myCanvas");
     const ctx = c.getContext("2d");
     const inputs = document.querySelectorAll('.controlers input');
+    const inputClear = document.querySelectorAll('#clear');
 
     c.width = window.innerWidth*0.8;
 	c.height = window.innerHeight*0.8;
 
     let strokeColor = "black"
-    let lineSize = 10;
+    let lineSize = 1;
     let eraserChecked = false;
 
     let isDrawing = false;
@@ -80,15 +91,17 @@
     ctx.lineJoin = 'round';
     ctx.lineCap = 'round';
 
-
-
     // console.log(c.width,c.height)
 
     function updateValue(){
         if (this.name == 'color')
             strokeColor = this.value;
-        else if (this.name == 'lineSize')
-            lineSize = this.value;
+        else if (this.name == 'lineSize'){
+            scale = (Math.log(100)-Math.log(1))/99;
+            lineSize = Math.floor(Math.exp(Math.log(1)+scale*(this.value-1)));
+            console.log(lineSize);
+
+        }
         else{
             eraserChecked = this.checked;
            if (eraserChecked == true)
@@ -110,12 +123,12 @@
 			y = e.offsetY;
 		} else  {
         // 处理触摸屏操作
-			x = e.changedTouches[0].clientX;
-			y = e.changedTouches[0].clientY;
+			x = e.changedTouches[0].clientX -e.target.offsetLeft;
+			y = e.changedTouches[0].clientY-e.target.offsetTop;
         // console.log(e);
 		}
 
-        console.log(strokeColor,lineSize,eraserChecked) 
+        // console.log(strokeColor,lineSize,eraserChecked) 
         ctx.lineWidth = lineSize;
         ctx.strokeStyle=strokeColor;
         ctx.beginPath();
@@ -125,6 +138,13 @@
         ctx.lineTo(x, y);
         ctx.stroke();
         [lastX, lastY] = [x, y];
+
+    }
+
+    // 清屏
+    function clearCanvas(){
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, c.width, c.width);
 
     }
 
@@ -144,13 +164,20 @@
 
     c.addEventListener('touchstart', (e) => {
 		isDrawing = true;
-		lastX = e.changedTouches[0].clientX;
-		lastY = e.changedTouches[0].clientY;
+		lastX = e.changedTouches[0].clientX-e.target.offsetLeft;
+		lastY = e.changedTouches[0].clientY-e.target.offsetTop;
+
+        // // 获取画板相对于屏幕的偏移量，即左上角的坐标
+        // this.offsetLeft = e.target.offsetLeft
+        // this.offsetTop = e.target.offsetTop
+  
 	});
 	
 	c.addEventListener('touchmove', draw);
 	c.addEventListener('touchend', () => isDrawing = false);
 	c.addEventListener('touchcancel', () => isDrawing = false);
+    
+    inputClear[0].addEventListener('click',clearCanvas);
 
     
  
