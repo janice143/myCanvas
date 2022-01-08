@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>My Canvas</title>
 </head>
 <style>
     body{
@@ -17,15 +17,13 @@
         margin:0 auto;
             
     }
-    .canvas{
+    #myCanvas{
         border: 1px solid black;
-        margin:20px auto;
-        width:90vh;
-        height:70vh;
+        margin:30px auto;
     }
     
     .controlers{
-            margin-top: 50px;
+            margin-top: 30px;
             font-size: 20px;
             font-weight: bold;
             display:flex;
@@ -52,9 +50,7 @@
             <input id="eraser" type="checkbox" name="eraser">
     
         </div>
-        <div class="canvas"> 
-            <canvas id="myCanvas"></canvas>
-        </div>
+        <canvas id="myCanvas" width="500" height="500"></canvas>
     </div>
     
     
@@ -94,11 +90,23 @@
 
     }
    
-    // console.log(updateValue())
+
 
     function draw(e) {
+        // console.log(e.type);
         if (!isDrawing) return; // stop the fn from running when they are not moused down
+
+            // console.log(e.type);
+		if(e.type == "mousemove"){
+			x = e.offsetX;
+			y = e.offsetY;
+		} else  {
+        // 处理触摸屏操作
+			x = e.changedTouches[0].clientX;
+			y = e.changedTouches[0].clientY;
         // console.log(e);
+		}
+
         console.log(strokeColor,lineSize,eraserChecked) 
         ctx.lineWidth = lineSize;
         ctx.strokeStyle=strokeColor;
@@ -106,9 +114,9 @@
         // start from
         ctx.moveTo(lastX, lastY);
         // go to
-        ctx.lineTo(e.offsetX, e.offsetY);
+        ctx.lineTo(x, y);
         ctx.stroke();
-        [lastX, lastY] = [e.offsetX, e.offsetY];
+        [lastX, lastY] = [x, y];
 
     }
 
@@ -123,6 +131,19 @@
     c.addEventListener('mousemove', draw);
     c.addEventListener('mouseup', () => isDrawing = false);
     c.addEventListener('mouseout', () => isDrawing = false);
+
+    // 移动端触摸屏
+
+    c.addEventListener('touchstart', (e) => {
+		isDrawing = true;
+		lastX = e.changedTouches[0].clientX;
+		lastY = e.changedTouches[0].clientY;
+	});
+	
+	c.addEventListener('touchmove', draw);
+	c.addEventListener('touchend', () => isDrawing = false);
+	c.addEventListener('touchcancel', () => isDrawing = false);
+
     
  
     </script>
